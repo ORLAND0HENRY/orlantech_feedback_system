@@ -10,4 +10,4 @@ A plug-and-play, asynchronous feedback system designed for Django projects.
 ### Integration:
 1. Add `orlantech_feedback` to `INSTALLED_APPS`.
 2. Include `path('nexus/', include('orlantech_feedback.urls'))` in main `urls.py`.
-3. Add `{% include 'orlantech_feedback/feedback_component.html' %}` to `base.html`.
+3. Add `{% include 'orlantech_feedback/feedback_component.html' %}` to `base.html`.   #incase u encunter template load issues ,add just before the close of the body tag 
