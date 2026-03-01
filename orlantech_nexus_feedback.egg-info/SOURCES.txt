@@ -1,0 +1,7 @@
+MANIFEST.in
+setup.py
+orlantech_nexus_feedback.egg-info/PKG-INFO
+orlantech_nexus_feedback.egg-info/SOURCES.txt
+orlantech_nexus_feedback.egg-info/dependency_links.txt
+orlantech_nexus_feedback.egg-info/requires.txt
+orlantech_nexus_feedback.egg-info/top_level.txt

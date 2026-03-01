@@ -1,0 +1,4 @@
+include LICENSE
+include README.md
+recursive-include orlantech_feedback/static *
+recursive-include orlantech_feedback/templates *

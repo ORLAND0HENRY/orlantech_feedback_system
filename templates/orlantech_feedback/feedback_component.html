@@ -1,0 +1,149 @@
+<style>
+    /* Amber-500 FAB - Positioned LEFT to avoid your WhatsApp support button */
+    .fb-fab {
+        position: fixed;
+        bottom: 24px;
+        left: 24px;
+        width: 60px;
+        height: 60px;
+        background-color: #f59e0b; /* Amber-500 */
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+        cursor: pointer;
+        z-index: 10000;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid white;
+    }
+    .fb-fab:hover { transform: scale(1.1) rotate(5deg); background-color: #d97706; }
+    .fb-fab span { font-size: 24px; font-weight: 900; }
+
+    /* Modal Overlay */
+    .fb-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(4px);
+        display: none; /* Controlled by JS */
+        align-items: center;
+        justify-content: center;
+        z-index: 10001;
+        padding: 20px;
+    }
+
+    /* Modal Box */
+    .fb-modal-content {
+        background: white;
+        padding: 32px;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 420px;
+        position: relative;
+        border-top: 6px solid #f59e0b;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .fb-modal-content h4 {
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-size: 14px;
+        margin-bottom: 16px;
+    }
+
+    .fb-modal-content textarea {
+        width: 100%;
+        height: 120px;
+        padding: 12px;
+        border: 2px solid #f4f4f5;
+        border-radius: 8px;
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        margin-bottom: 16px;
+        resize: none;
+        outline: none;
+    }
+    .fb-modal-content textarea:focus { border-color: #f59e0b; }
+
+    .fb-submit-btn {
+        width: 100%;
+        background: #000;
+        color: white;
+        font-weight: 900;
+        text-transform: uppercase;
+        padding: 14px;
+        border-radius: 8px;
+        font-size: 11px;
+        letter-spacing: 0.15em;
+        transition: all 0.2s;
+    }
+    .fb-submit-btn:hover { background: #f59e0b; }
+</style>
+
+<div class="fb-fab" onclick="toggleOrlantechFeedback()">
+    <span>?</span>
+</div>
+
+<div id="orlantechFeedbackModal" class="fb-modal" onclick="if(event.target == this) toggleOrlantechFeedback()">
+    <div class="fb-modal-content">
+        <h4 style="color: #f59e0b;">Operational Feedback</h4>
+        <p style="font-size: 11px; color: #71717a; margin-bottom: 20px; font-weight: 600;">Report UI collisions or technical anomalies.</p>
+
+        <form id="orlantechFeedbackForm">
+            {% csrf_token %}
+            <textarea name="message" placeholder="Describe the issue in detail..." required></textarea>
+            <button type="submit" class="fb-submit-btn">Transmit Report</button>
+        </form>
+        <div id="fb-status" style="margin-top: 15px; font-size: 10px; font-weight: 900; text-align: center; text-transform: uppercase;"></div>
+    </div>
+</div>
+
+<script>
+    function toggleOrlantechFeedback() {
+        const modal = document.getElementById('orlantechFeedbackModal');
+        const isHidden = modal.style.display === 'none' || modal.style.display === '';
+        modal.style.display = isHidden ? 'flex' : 'none';
+    }
+
+    document.getElementById('orlantechFeedbackForm').onsubmit = function(e) {
+        e.preventDefault();
+        const status = document.getElementById('fb-status');
+        const btn = e.target.querySelector('button');
+
+        status.innerText = "Initiating Transmission...";
+        status.style.color = "#71717a";
+        btn.disabled = true;
+        btn.style.opacity = "0.5";
+
+        fetch('/nexus/submit/', {
+            method: 'POST',
+            body: new FormData(this),
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'success') {
+                status.innerText = "✓ Transmission Successful";
+                status.style.color = "#10b981"; // Emerald-500
+                setTimeout(() => {
+                    toggleOrlantechFeedback();
+                    this.reset();
+                    status.innerText = "";
+                    btn.disabled = false;
+                    btn.style.opacity = "1";
+                }, 2000);
+            }
+        })
+        .catch(error => {
+            status.innerText = "✗ Transmission Failed";
+            status.style.color = "#ef4444";
+            btn.disabled = false;
+            btn.style.opacity = "1";
+        });
+    };
+</script>
